@@ -1,0 +1,27 @@
+nameOverride: "" 
+fullnameOverride: ""  
+
+image:
+  repository: postgres
+  tag: "12"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 5432
+
+storage:
+  size: 10Gi
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+
+postgresConfig:
+  username: postgres
+  password: postgres
+  database: mydatabase

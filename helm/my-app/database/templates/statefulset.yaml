@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.global.dbName }}-postgresql      
+spec:
+  serviceName: "{{ .Values.global.dbName }}-service"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.global.dbName }}-postgresql
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.global.dbName }}-postgresql
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: postgresql
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.service.port }}
+        env:
+        - name: POSTGRES_DB
+          value: {{ .Values.postgresConfig.database }}
+        - name: POSTGRES_USER
+          value: {{ .Values.postgresConfig.username }}
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.global.dbName }}-postgresql-secrets
+              key: postgres-password
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: {{ .Values.global.dbName }}-postgresql-pvc

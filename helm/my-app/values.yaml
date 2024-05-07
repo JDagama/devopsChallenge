@@ -1,0 +1,7 @@
+global:
+  appName: "my-app"
+  dbName: "my-db"
+
+api:
+
+database:
